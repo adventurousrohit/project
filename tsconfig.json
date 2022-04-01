@@ -1,0 +1,27 @@
+{
+  "compilerOptions": 
+    {
+      "esModuleInterop": true,
+    },
+    "target": "esnext",                                
+    "module": "commonjs",                             
+    // "forceConsistentCasingInFileNames": true,           
+    "strict": true, 
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    // "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "pretty": true,
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "allowJs": true,
+    "noEmit": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "importHelpers": true,                                     
+    
+    "skipLibCheck": true                                
+  }
+

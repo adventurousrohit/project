@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { model, Schema, Document } from "mongoose"
-import { User } from "../interfaces/user.model";
+import { User } from "../interfaces/user.interface";
 
-// const 
-// ROLES = ["admin","doctor", "patient"],
+const STACK =['backend','frontend','fullstack','webDesign']
+// ROLES = ["admin","doctor", "patient"]
 // SOCIALS = ["apple", "google", "facebook"],
 // GENDER = ["","male","female"],
 // PROFILE_APPROVAL= ["pending","rejected","blocked","approved"];
@@ -88,7 +88,8 @@ const userSchema: Schema = new Schema(
 		techStack: [{
 			stack: {
 				type: String,
-				required: true
+				required: true,
+				enum:STACK
 			}
 
 		}],

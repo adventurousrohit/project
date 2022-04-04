@@ -1,0 +1,637 @@
+openapi: 3.0.3
+info:
+  title: Tooth Fairy
+  description: Tooth Fairy Rest APIs documentation
+  version: 1.0.0
+servers:
+  - url: 'http://127.0.0.1:3000/api'
+    description: Local Development server
+tags:
+  - name: common
+    description: common API
+  - name: auth
+    description: auth API
+  - name: users
+    description: users API
+paths:
+  /:
+    get:
+      summary: Check server up/down status
+      operationId: rootpoint
+      tags:
+        - common
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Server Error
+  /get-configs/{type}:
+    get:
+      summary: get config values
+      operationId: config
+      tags:
+        - common
+      parameters:
+        - in: path
+          name: type
+          schema:
+            type: string
+            enum:
+              - perPageRecord
+              - s3
+              - stripe
+          required: true
+          description: config type
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Server Error
+  /auth/generate-otp:
+    post:
+      summary: Generate an OTP
+      operationId: generateOTP
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - signup
+                - email
+                - mobile
+              properties:
+                signup:
+                  type: boolean
+                  example: false
+                email:
+                  type: string
+                  description: email address
+                  example: raviroshanmehta@gmail.com
+                mobile:
+                  type: string
+                  description: enter mobile number with country code
+                  example: '+919782547643'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /auth/verify-otp:
+    post:
+      summary: Verify OTP
+      operationId: verifyOTP
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - _id
+                - otp
+              properties:
+                _id:
+                  type: string
+                  description: enter id received during OTP generate
+                otp:
+                  type: number
+                  description: enter 6 digit OTP
+                  example: 123456
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /auth/signup:
+    post:
+      summary: Sign UP for admin
+      operationId: signUP
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - mobile
+                - password
+                - role
+              properties:
+                firstName:
+                  type: string
+                  example: Ravi
+                lastName:
+                  type: string
+                  example: Roshan
+                email:
+                  type: string
+                  example: raviroshanmehta@gmail.com
+                mobile:
+                  type: string
+                  example: '+919782547643'
+                password:
+                  type: string
+                  example: '123456'
+                role:
+                  type: string
+                  example: patient
+                profileImage:
+                  type: string
+                  example: default.png
+                address:
+                  type: string
+                  example: Jaipur, Rajasthan India
+                device:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: a577f69031845c8cb
+                    token:
+                      type: string
+                      example: >-
+                        f6903eJk2rjmCQ1WeVMwRz-VK5v:APA91bGcmDCPuC98jFmskqaH5GEqbacTFYFgjxtHTvy_s3SUzorE1845c8cb
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /auth/login:
+    post:
+      summary: Login for admins
+      operationId: login
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - role
+                - password
+              properties:
+                role:
+                  type: string
+                  example: patient
+                email:
+                  type: string
+                  example: raviroshanmehta@gmail.com
+                password:
+                  type: string
+                  example: '123456'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /admin/create-user:
+    post:
+      summary: creating employee by admin
+      operationId: Create
+      tags:
+        - admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - mobile
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                  example: Ravi
+                email:
+                  type: string
+                  example: 301996rohit@gmail.com
+                mobile:
+                  type: string
+                  example: '+919782547643'
+                password:
+                  type: string
+                  example: '123456'
+                role:
+                  type: string
+                  example: employee
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /admin/user/update-role/{email}:
+    patch:
+      summary: updating role 
+      operationId: Update
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: Email ID of the user
+          example: 301996rohit@gmail.com
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - role
+              properties:
+                type:
+                  type: string
+                  example: push
+                role:
+                  type: string
+                  example: employee
+      responses:
+        '201':
+          description: Updated
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /admin/user/update-profile/{id}:
+    put:
+      summary: update profile 
+      operationId: Update profile 
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the user
+          example: 62441f31a8fe8d1fc8632bd8
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - role
+              properties:
+                email:
+                  type: string
+                  example: raviroshanmehta@gmail.com
+                role:
+                  type: string
+                  example: employee
+      responses:
+        '201':
+          description: Updated
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /admin/delete-user/{id}:
+    delete:
+      summary: deleteUser
+      operationId: delete
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the user
+          example: 62441f31a8fe8d1fc8632bd8
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /admin/user-details/{role}:
+    get:
+      summary: UserDetails
+      operationId: Users
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: role
+          schema:
+            type: string
+          required: true
+          description: Role of the user
+          example: HR    
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  
+  /admin/users/export:
+    get:
+      summary: UserDetails
+      operationId: User
+      tags:
+        - admin
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+          required: true
+          description: Role of the user
+          example: HR    
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  
+  /auth/social-login:
+    post:
+      summary: Social Login
+      operationId: slogin
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - social
+                - role
+              properties:
+                email:
+                  type: string
+                  example: raviroshanmehta@apple.com
+                role:
+                  type: string
+                  example: user
+                social:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: apple
+                    token:
+                      type: string
+                      example: apple123
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  # /auth/log:
+  #   delete:
+  #     summary: delete
+  #     operationId: dwlwte
+  #     tags:
+  #       - admin
+  #     security:
+  #       - ApiKeyAuth: []
+  #     responses:
+  #       '200':
+  #         description: OK
+  #       '400':
+  #         description: Bad Request
+  #       '409':
+  #         description: Conflict
+  #       '500':
+  #         description: Server Error
+
+    
+  /auth/logout:
+    get:
+      summary: Logout
+      operationId: logout
+      tags:
+        - auth
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /auth/forgot-password/{email}:
+    get:
+      summary: Forgot Password
+      operationId: fpass
+      tags:
+        - auth
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: Email ID of the user
+          example: raviroshanmehta@gmail.com
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /users/user-details/{email}:
+    get:
+      summary: UserDetails
+      operationId: Users
+      tags:
+        - user
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: email of the user
+          example: 301996rohit@gmail.com    
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  /users/create-users:
+    post:
+      summary: Create user
+      operationId: userPost
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - social
+                - role
+              properties:
+                email:
+                  type: string
+                  example: raviroshanmehta@apple.com
+                role:
+                  type: string
+                  example: user
+                social:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      example: apple
+                    token:
+                      type: string
+                      example: apple123
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+        '500':
+          description: Server Error
+  
+
+  
+  
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+
+    
+    User:
+      properties:
+        name:
+          type: string
+          example: Ravi Roshan
+        password:
+          type: string
+          example: '1234567'
+        gender:
+          type: string
+          example: male
+        dob:
+          type: number
+          example: 1623152805000
+        profileImage:
+          type: string
+          example: default.png
+        bgImage:
+          type: string
+          example: default.png
+        address:
+          type: string
+          example: Jaipur, Rajasthan India
+        location:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - Point
+                - Polygon
+              example: Point
+            coordinates:
+              type: array
+              items:
+                type: integer
+                format: int64
+              example:
+                - -104.9903
+                - 39.7392
+
+
+  
+
